@@ -1,4 +1,4 @@
-# Relationship Diagram 
+# Social Protocols for Chimera-Openclaw: Relationship Diagram 
 ![Social Protocols for Chimera-Openclaw](../images/social-protocol-chimera-openclaw.png)
 
 # Project Chimera: Identity and Intelligence Layer in OpenClaw
