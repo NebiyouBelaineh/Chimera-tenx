@@ -1,92 +1,145 @@
-# Project Chimera: The Agentic Infrastructure Challenge
+# Project Chimera
 
-**Role:** Forward Deployed Engineer (FDE) Trainee  
-**Duration:** February 4 - February 6, 2026
-
----
-
-## Project Overview
-
-Project Chimera is an engineering initiative to build a robust infrastructure for **Autonomous AI Influencers**. The system leverages **Spec-Driven Development (SDD)**, **Model Context Protocol (MCP)**, and **Agentic Commerce** to create digital entities capable of independent trend research, content creation, and financial management.
+**Autonomous Influencer Network** — A spec-driven repository for building AI agents that research trends, generate content, and manage engagement. The repository is designed so that intent lives in specifications and infrastructure (CI/CD, tests, Docker, linting) enforces reliability.
 
 ---
 
-## 3-Day Roadmap
+## What This Repository Is
 
-### Day 1: The Strategist (Research & Foundation)
-**Focus:** Domain Mastery and Environment Setup
+Project Chimera is the **“Factory”** for **Autonomous Influencers**: digital entities with perception (MCP Resources), reasoning (FastRender Swarm: Planner / Worker / Judge), creative output (text, image, video), and economic agency (Coinbase AgentKit). The layout and tooling are intended to allow humans or AI agents to implement features against a single source of truth (`specs/`) with automated checks on every change.
 
-- **Task 1.1: Research Analysis**  
-  Review the a16z Trillion Dollar AI Code Stack, OpenClaw protocols, MoltBook, and the Chimera SRS. Focus on inter-agent communication and sovereign digital identity.
+**Core principles:**
 
-- **Task 1.2: Architecture Strategy**  
-  Document the agent pattern and infrastructure. Requirements include:
-  - FastRender Swarm pattern (Planner/Worker/Judge)
-  - Human-in-the-Loop safety triggers
-  - Database selection (SQL for transactions vs NoSQL/Vector for metadata)
-
-- **Task 1.3: Environment Initialization**  
-  - Configure the Git repository using the **uv Python manager**  
-  - Connect **Tenx MCP Sense** for activity telemetry  
-  - Establish a `pyproject.toml`
+- **Spec-Driven Development (SDD):** Implementation follows ratified specs in `specs/`; code is traceable to API contracts and schemas defined there.
+- **MCP-only external access:** All external data and actions go through Model Context Protocol servers; the agent core does not call third-party APIs directly.
+- **FastRender Swarm:** Core workflows use a Planner → Worker → Judge architecture.
+- **Governance:** Linting (PEP 8), tests, and an AI review policy (CodeRabbit) run in CI on every push.
 
 ---
 
-### Day 2: The Architect (Specification & Context Engineering)
-**Focus:** Translating Requirements into Executable Intent
+## Requirements and Constraints That Shaped This Repository
 
-- **Task 2.1: Master Specification**  
-  Create a `specs/` directory using the GitHub Spec Kit framework:
-  - `_meta.md`: Vision and constraints  
-  - `functional.md`: User stories and agent behaviors  
-  - `technical.md`: API contracts (JSON I/O) and Database ERDs
+The structure and tooling reflect the following requirements and constraints used when building the repository:
 
-- **Task 2.2: Context Engineering**  
-  Implement a `.cursor/rules` or `CLAUDE.md` file to govern IDE agents. Rules must:
-  - Mandate spec-checking before code generation
-  - Require plan explanation before execution
+- **Spec-first:** No implementation without a ratified specification; specs must include API contracts, data schemas, and agent interfaces where relevant.
+- **Executable specs:** API inputs/outputs and database schema are defined in a way that supports contract tests and validation.
+- **Separation of developer tooling vs runtime:** Developer MCPs (e.g. Git, filesystem, GitHub) are documented separately from runtime agent skills; skills define input/output contracts and depend on MCP servers for external capabilities.
+- **TDD and “empty slots”:** Tests were written to assert data structures and interfaces from the technical spec before implementation, defining the contracts the implementation must satisfy.
+- **Governance pipeline:** Linting, security-related checks, and testing run automatically (e.g. in CI and optionally in Docker), so every push is validated.
+- **AI review policy:** Code review configuration (e.g. CodeRabbit) instructs reviewers to check for spec alignment and security vulnerabilities, in addition to standard tooling (linters, secret scanners).
 
-- **Task 2.3: Tooling & Skills**  
-  - **Developer MCPs:** Configure `git-mcp` and `filesystem-mcp` for infrastructure management  
-  - **Agent Skills:** Create a `skills/` directory with README-defined contracts for:
-    - `skill_download_video`
-    - `skill_transcribe_audio`
-    - `skill_trend_fetcher`
+These are reflected in the presence of `specs/`, contract tests in `tests/`, the Makefile and CI workflow, and `.coderabbit.yaml`.
 
 ---
 
-### Day 3: The Governor (Infrastructure & Governance)
-**Focus:** Safety, Testing, and Automation
+## What’s in This Repository
 
-- **Task 3.1: Test-Driven Development (TDD)**  
-  Write failing unit tests in `tests/` based on technical specs. Focus on:
-  - Data structure validation
-  - Skill interface adherence
+### Specifications (`specs/`)
 
-- **Task 3.2: Containerization**  
-  - Develop a `Dockerfile` for environment encapsulation  
-  - Create a `Makefile` with commands for setup and test
+The single source of truth for vision, behavior, and technical contracts:
 
-- **Task 3.3: CI/CD & Governance**  
-  - Configure a GitHub Action (`.github/workflows/main.yml`) to execute the test suite on every push  
-  - Implement a `.coderabbit.yaml` policy for AI-driven code reviews focusing on spec alignment and security
+| Document | Purpose |
+|----------|---------|
+| `_meta.md` | Vision, constraints, FastRender + MCP patterns, hybrid data (PostgreSQL, Weaviate, Redis). |
+| `functional.md` | User stories from the agent’s perspective (Cognitive Core, Perception, Creative Engine, Action, Agentic Commerce, HITL). |
+| `technical.md` | API contracts (Agent Task, Worker Result, MCP tools), database schema/ERD, Trend Alert, HITL. |
+| `openclaw_integration.md` | How Chimera publishes availability, status, and capabilities to the OpenClaw network. |
+| `001-autonomous-influencer-agents/` | Focused spec and checklists for autonomous influencer agents. |
+
+### Agent Skills (`skills/`)
+
+`skills/README.md` defines **input/output contracts** for 20+ runtime skills (perception, memory, content generation, social actions, agentic commerce, validation). Skills are distinct from MCP servers: they are internal capability packages that orchestrate MCP tools; contracts are traceable to the SRS and technical spec.
+
+### Research and Documentation (`research/`, `docs/`)
+
+- **`research/tooling_strategy.md`** — Selection and configuration of MCP servers used for development (e.g. GitHub, Filesystem, Git, SQLite).
+- **`docs/analysis/`** — Chimera’s role in the Agent Social Network (OpenClaw), social protocols for agent-to-agent interaction.
+- **`docs/insights/`** — Architecture notes and agent infrastructure pattern; diagrams in `docs/images/`.
+- **`docs/project-chimera-srs-challenge/`** — Full Software Requirements Specification (SRS) and challenge context for readers who want the full product and process background.
+
+### IDE and Agent Context (`.cursor/`)
+
+- **`.cursor/rules/`** — Rules for IDE and AI assistants: project context, **Prime Directive** (no code generation without consulting `specs/`), traceability, MCP/TDD/safety. Ensures contributors and agents check specs before implementing.
+- **`.cursor/commands/`** — Spec Kit–style commands for specification workflow.
+- **`.cursor/mcp.json`** — MCP server configuration (developer and telemetry-related servers).
+
+### Tests (`tests/`)
+
+Contract tests that assert behavior and data shapes from the technical spec:
+
+- **`test_trend_fetcher.py`** — Trend Alert and trend data structure vs API contract in `specs/technical.md`.
+- **`test_skills_interface.py`** — Skill interfaces (e.g. `skill_monitor_resources`, `skill_detect_trends`) accept the specified parameters and return the specified contract.
+
+Tests are run in Docker via `make test` and are part of CI.
+
+### Infrastructure
+
+- **`Dockerfile`** — Python 3.13 and uv; default command runs the test suite.
+- **`Makefile`** — `setup`, `test`, `lint`, `spec-check`, `clean`.
+- **`.github/workflows/main.yml`** — On every push/PR: lint job (`make lint`) and test job (`make test`).
+- **`.coderabbit.yaml`** — CodeRabbit configuration: path-based instructions for **spec alignment** (against `specs/`) and **security**; tools such as Gitleaks, Semgrep, and Ruff enabled.
+- **`pyproject.toml`** — Project config and Ruff (PEP 8) lint/format configuration.
 
 ---
 
-## Submission Checklist
+## Repository Structure
 
-### Day 1 Submission (Feb 4)
-- **Google Drive Link:** A single PDF or Doc containing:
-  - **Research Summary:** Key insights from required reading materials
-  - **Architectural Approach:** Justification for agent patterns and infrastructure choices
+```
+├── .cursor/           # IDE rules and MCP config
+│   ├── rules/         # chimera-core, research-architecture, python_uv_dockerfile, agent
+│   ├── commands/      # Spec Kit commands
+│   └── mcp.json       # MCP server configuration
+├── .github/
+│   └── workflows/
+│       └── main.yml   # CI: lint + test on push/PR
+├── docs/              # Analysis, report, images, insights
+│   ├── analysis/      # OpenClaw role, social protocols
+│   ├── insights/      # Architecture and insights
+│   ├── project-chimera-srs-challenge/  # SRS and context
+│   └── Project-Chimera-Report.md
+├── research/
+│   └── tooling_strategy.md   # Developer MCP servers
+├── specs/             # Single source of truth (SDD)
+│   ├── _meta.md       # Vision, constraints, patterns
+│   ├── functional.md  # User stories (agent perspective)
+│   ├── technical.md   # API contracts, schema, ERD
+│   ├── openclaw_integration.md
+│   └── 001-autonomous-influencer-agents/
+├── skills/
+│   └── README.md      # Skill I/O contracts (20+ skills)
+├── tests/             # Contract tests
+│   ├── test_trend_fetcher.py
+│   └── test_skills_interface.py
+├── .coderabbit.yaml   # AI review: spec alignment + security
+├── Dockerfile         # Python 3.13 + uv, run tests
+├── Makefile           # setup, test, lint, spec-check, clean
+├── pyproject.toml     # Project and Ruff config
+└── README.md          # This file
+```
 
-### Day 3 Submission (Feb 6)
-- **GitHub Repository:** Must include:
-  - `specs/`, `tests/`, `skills/`
-  - `Dockerfile`, `Makefile`
-  - CI/CD workflows
-- **Loom Video:** 5-minute walkthrough of:
-  - Spec structure
-  - Failing tests
-  - IDE agent rule compliance
-- **MCP Telemetry:** Verification of active Tenx MCP Sense connection during the challenge
+---
+
+## Getting Started
+
+**Prerequisites:** Python 3.13+, [uv](https://docs.astral.sh/uv/), Docker (for `make test`).
+
+```bash
+git clone <repo-url>
+cd Chimera-tenx
+make setup      # Install dependencies (uv sync)
+make test       # Run tests in Docker
+make lint       # Run Ruff (PEP 8 check + format check)
+make spec-check # Verify spec files and run contract tests in Docker
+```
+
+Before changing code, read the relevant specs in `specs/` (_meta, functional, technical). The `.cursor/rules` encode a **Prime Directive**: check specs first and keep implementation traceable to them.
+
+---
+
+## Key References
+
+- **Specs:** [specs/](specs/) — _meta, functional, technical, openclaw_integration
+- **Skills (contracts):** [skills/README.md](skills/README.md)
+- **SRS and context:** [docs/project-chimera-srs-challenge/](docs/project-chimera-srs-challenge/)
+- **Research and tooling:** [research/tooling_strategy.md](research/tooling_strategy.md), [docs/analysis/](docs/analysis/), [docs/insights/](docs/insights/)
+- **IDE rules:** [.cursor/rules/](.cursor/rules/) — chimera-core (Prime Directive), research-architecture, python_uv_dockerfile
