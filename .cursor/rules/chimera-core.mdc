@@ -1,0 +1,43 @@
+---
+alwaysApply: true
+---
+
+---
+description: Global project context, the Prime Directive, and operational guardrails for Project Chimera.
+alwaysApply: true
+---
+
+# Project Chimera: Core Operational Policy
+
+## 1. Project Context
+This is **Project Chimera**, an autonomous influencer system. The goal is to architect a "Factory" of digital entities capable of independent research, content generation, and agentic commerce. 
+
+We are following **Spec-Driven Development (SDD)** and the **FastRender Swarm Pattern** (Planner, Worker, Judge).
+
+## 2. The Prime Directive (Strict Mode)
+**NEVER generate implementation code without first checking the `specs/` directory.**
+- If a relevant spec file in `specs/` (e.g., `technical.md`, `functional.md`, or `_meta.md`) does not exist for the requested task, you must ask the user to create/finalize the spec first.
+- Your code must be a 1:1 reflection of the API contracts and schemas defined in the specs.
+
+## 3. Reasoning & Traceability
+Before writing a single line of code, you must:
+1. **Analyze:** Identify which specs/ requirements apply to the current task.
+2. **Plan:** Present a step-by-step plan of action.
+3. **Validate:** Confirm the plan aligns with the "FastRender" architecture and safety guardrails.
+4. **Trace:** Explicitly state: "Based on specs/[filename], I am proceeding with..."
+
+## 4. Technical Constraints
+- **Model Context Protocol (MCP):** All external world interactions (Twitter, DB, News) must be abstracted through MCP.
+- **Agentic Commerce:** Treat the Coinbase AgentKit as a sensitive "CFO" layer.
+- **TDD Requirement:** Favor writing the test case (the "Empty Slot") before the implementation logic.
+
+## 5. Non-Interference & Governance
+To ensure compliance with the Tenx MCP Sense telemetry and professional environment standards:
+- **Telemetry Protection:** NEVER modify, delete, or attempt to bypass configuration in `.cursor/` or any MCP-related settings.
+- **Git Hygiene:** Do not perform "bulk" commits. Suggest logical, atomic commit messages that reflect the evolution of the project.
+- **Safety:** If an instruction violates the safety guardrails in `specs/functional.md` or the `SOUL.md` persona, you must flag the conflict and refuse the generation.
+
+## 6. Relationship to Other Rules
+- This rule acts as the **Master Policy**. 
+- Use `research-architecture.mdc` for deep-dive system design and approach.
+- In case of conflict, this file's **Prime Directive** (Check Specs First) takes absolute precedence.
