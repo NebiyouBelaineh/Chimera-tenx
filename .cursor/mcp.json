@@ -30,8 +30,8 @@
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-sqlite",
-        "./data/chimera_dev.db"
+        "mcp-server-sqlite-npx",
+        "/home/neba/work/tenx-trp/tenx-day-3-5/Chimera-tenx/data/chimera_dev.db"
       ]
     }
   }
