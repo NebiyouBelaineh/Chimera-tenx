@@ -1,0 +1,184 @@
+---
+alwaysApply: false
+---
+# Cursor Rule: Dockerfile Creation (Python + uv + pytest)
+
+## Scope
+
+Applies **only** when generating or modifying a `Dockerfile` for Python projects using **uv**.
+
+Primary goals:
+
+* Minimal images
+* Deterministic builds
+* Fast rebuilds
+* Zero unnecessary flags, packages, or layers
+
+---
+
+## Base Image Rules
+
+* Use official Python images only
+* Prefer `python:X.Y-slim`
+* **Always pin** the Python version (never `latest`)
+* Do **not** use Alpine unless explicitly required
+
+Example:
+
+```dockerfile
+FROM python:3.12-slim
+```
+
+---
+
+## OS Packages
+
+* Install **only packages that are strictly required** to:
+
+  * build Python dependencies, or
+  * run the application
+* No convenience tools (curl, wget, nano, vim, etc.) unless required
+* Remove apt cache in the same layer
+
+Allowed pattern:
+
+```dockerfile
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends build-essential \
+ && rm -rf /var/lib/apt/lists/*
+```
+
+---
+
+## uv Usage Rules
+
+* `uv` is the **only** dependency manager
+* Dependencies must come from `pyproject.toml` + `uv.lock`
+* Never use `pip install` unless explicitly instructed
+
+Rules:
+
+* Use `uv sync` for installs
+* Use `--frozen` for reproducibility
+* Do **not** install dev dependencies in production images
+
+---
+
+## Build Caching Strategy
+
+* Copy dependency files **before** application code
+* Never invalidate the dependency layer unnecessarily
+
+Required order:
+
+```dockerfile
+WORKDIR /app
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen
+
+COPY . .
+```
+
+---
+
+## Environment Rules
+
+* Avoid unnecessary environment variables
+* Only set variables required for correctness
+* No magic values without justification
+
+Allowed examples:
+
+```dockerfile
+ENV PYTHONUNBUFFERED=1
+```
+
+---
+
+## User & Security
+
+* Do not run as root unless unavoidable
+* Create a non-root user for runtime
+* Switch users **after** dependency installation
+
+Example:
+
+```dockerfile
+RUN useradd -m appuser
+USER appuser
+```
+
+---
+
+## Runtime Commands
+
+* Prefer `CMD` over `ENTRYPOINT`
+* Always use exec form
+* Keep runtime logic explicit
+
+Example:
+
+```dockerfile
+CMD ["uv", "run", "python", "-m", "app"]
+```
+
+---
+
+## Testing (pytest)
+
+### Development / Test Images ONLY
+
+* pytest must **not** exist in production images
+* Test images may install dev dependencies
+
+Allowed pattern:
+
+```dockerfile
+RUN uv sync --frozen --dev
+CMD ["uv", "run", "pytest"]
+```
+
+---
+
+## Multi-Stage Builds
+
+* Use multi-stage builds **only if** they reduce final image size
+* No multi-stage builds by default
+* Each stage must justify its existence
+
+---
+
+## What Is Forbidden
+
+* `latest` tags
+* Unpinned versions
+* Extra flags "for safety"
+* Commented-out Dockerfile lines
+* Unused build args
+* Copying the entire repo blindly
+
+---
+
+## Production vs Development Rules
+
+### Production Image
+
+* No dev dependencies
+* No test tools
+* Smallest possible image
+* Single responsibility: run the app
+
+### Development / Test Image
+
+* May include pytest
+* May include debugging tools **if required**
+* Must not be reused as production
+
+---
+
+## Default Principle
+
+> If a line is not required for correctness, determinism, or security — remove it.
+
+Minimalism is correctness.
