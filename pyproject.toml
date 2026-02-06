@@ -6,7 +6,22 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = []
 
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+src = ["."]
+exclude = [".git", ".venv", "__pycache__", "build", "dist", ".specify", ".cursor"]
+
+[tool.ruff.lint]
+# PEP 8: pycodestyle (E, W) + Pyflakes (F)
+select = ["E", "W", "F"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["F401"]  # allow unused imports in test modules
+
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
+    "ruff>=0.8.0",
 ]
