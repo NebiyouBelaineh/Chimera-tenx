@@ -1,0 +1,34 @@
+# CodeRabbit AI Review Policy — Project Chimera
+# Task 3.3: CI/CD & AI Governance — instruct reviewer to check Spec Alignment and Security.
+
+language: "en-US"
+
+reviews:
+  profile: "assertive"
+  high_level_summary: true
+  path_instructions:
+    # Apply to all source and config under review
+    - path: "**/*.py"
+      instructions: |
+        Spec alignment: Verify that implementation matches the project specifications.
+        - Check specs/technical.md for API contracts, data schemas, and technical constraints.
+        - Check specs/functional.md for user stories and acceptance criteria.
+        - Check specs/_meta.md for high-level vision and constraints.
+        Flag any code that diverges from or contradicts these specs without justification.
+        Security: Flag hardcoded secrets, unsafe use of eval/exec, SQL injection risks,
+        insecure deserialization, and missing input validation. Prefer env vars for secrets.
+    - path: "**/Dockerfile"
+      instructions: |
+        Spec alignment: Ensure the image matches the environment described in specs (e.g. Python version, uv).
+        Security: Flag running as root, unnecessary capabilities, or copying sensitive files.
+    - path: "**/*.yaml"
+      instructions: |
+        Security: Flag hardcoded secrets, tokens, or API keys. Ensure no sensitive data in config.
+  tools:
+    # Security: enable secret scanning and static analysis
+    gitleaks:
+      enabled: true
+    semgrep:
+      enabled: true
+    ruff:
+      enabled: true
