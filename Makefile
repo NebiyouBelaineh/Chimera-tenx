@@ -4,12 +4,13 @@
 IMAGE_NAME := chimera-tenx
 PYTHON_MIN := 3.13
 
-.PHONY: setup test spec-check clean help
+.PHONY: setup test lint spec-check clean help
 
 help:
 	@echo "Targets:"
 	@echo "  make setup      - Install dependencies (uv sync)"
 	@echo "  make test      - Run tests in Docker"
+	@echo "  make lint      - Run Python linter (PEP 8 style, ruff)"
 	@echo "  make spec-check - Verify spec alignment (files + contract tests)"
 	@echo "  make clean     - Remove Docker image and cache"
 
@@ -19,6 +20,11 @@ setup:
 test:
 	docker build -t $(IMAGE_NAME) .
 	docker run --rm $(IMAGE_NAME)
+
+# PEP 8 style linting via ruff (pycodestyle E/W + Pyflakes F)
+lint:
+	uv run ruff check .
+	uv run ruff format --check .
 
 spec-check:
 	@echo "=== Spec alignment check (Option A) ==="
